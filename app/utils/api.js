@@ -1,59 +1,53 @@
-const axios = require('axios');
+import axios from 'axios';
 
 const token = "787b12207b67d52ebedcfa817bca4413b231de6b"
 const params = `?access_token=${token}`
 
-function getProfile(username) {
-  return axios.get('https://api.github.com/users/' + username + params)
-    .then(function (user) {
-      return user.data;
-    });
+const getProfile = (username) => {
+  axios.get(`https://api.github.com/users/${ username }${ params }`)
+    .then(user => user.data);
 }
 
-function getRepos(username) {
-  return axios.get('https://api.github.com/users/' + username + '/repos' + params)
+const getRepos = (username) => {
+  axios.get(`https://api.github.com/users/${ username }/repos${ params }`);
 }
 
-function getStarCount (repos) {
-  return repos.data.reduce(function (count, repo) {
-    return count + repo.stargazers_count;
-  }, 0);
+const getStarCount = (repos) => {
+  repos.data.reduce((count, repo) => { count + repo.stargazers_count }, 0);
 }
 
-function calculateScore(profile, repos) {
+const calculateScore = (profile, repos) => {
   const followers = profile.followers;
   const totalStars = getStarCount(repos);
 
   return (followers * 3) + totalStars;
 }
 
-function handleError(error) {
-  console.warn("An error occured: " + error)
+const handleError = (error) => {
+  console.warn(`An error occured: ${error}`);
   return null;
 }
 
-function getUserData(player) {
-  return axios.all([
+const getUserData = (player) => {
+  axios.all([
     getProfile(player),
     getRepos(player)
-  ]).then(function (data) {
+  ]).then((data) => {
     let profile = data[0];
     let repos = data[1];
 
     return {
-      profile: profile,
+      profile,
       score: calculateScore(profile, repos)
     }
-  });
-}
-
-function sortPlayers(players) {
-  return players.sort(function (a, b) {
-    return b.score - a.score;
   })
 }
 
-module.exports = {
+const sortPlayers = (players) => {
+  players.sort((a, b) => b.score - a.score);
+}
+
+export default {
   battle: function (players) {
     return axios.all(players.map(getUserData))
       .then(sortPlayers)
