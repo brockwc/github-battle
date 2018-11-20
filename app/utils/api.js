@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const token = "584b249b41194cd224fa44825db04a8c37aebee2"
+const token = "1cfe937c9277a0074d5f413ceeea2ec637e00347"
 const params = `?access_token=${token}`
 
 const getProfile = (username) => {
